@@ -1,0 +1,136 @@
+Logitech MediaPlay Cordless Mouse USB Linux driver
+	by David Oliveira <d.oliveira@prozone.org>
+
+
+	This driver was released to add support for MediaPlay Mouse multimedia keys.
+	Basically, this is a changed version of usbmouse.c by Vojtech Pavlik.
+
+
+	Installation:
+
+		First of all, you have to compile input core and USB support in your kernel.
+		Check this lines on your /lib/modules/your-kernel-version/build/.config file:
+
+		Kernel 2.6:
+
+			CONFIG_INPUT=y
+			CONFIG_INPUT_MOUSEDEV=y
+			CONFIG_INPUT_EVDEV=m
+
+			CONFIG_USB=m
+			CONFIG_USB_UHCI_HCD=m			(or similar)
+		
+		Kernel 2.4:
+
+			CONFIG_INPUT=m
+			CONFIG_INPUT_KEYBDEV=m
+			CONFIG_INPUT_MOUSEDEV=m
+			CONFIG_INPUT_EVDEV=m
+
+			CONFIG_USB=m
+			CONFIG_USB_UHCI=m			(or similar)
+
+		As you can see, I have allmost support compiled as module but if you prefer
+		it can be compiled kernel builtin.
+
+		Check this lines and recompile Linux kernel if required.
+		After input and USB support compiled, you can proceed.
+
+		On lmpcm directory:
+
+		# make
+		# make install
+
+		Installation script will copy lmpcm_usb.ko (lmpcm_usb.o for kernel 2.4) to
+		/lib/modules/your-kernel-version/misc/ and add an entry to your modules.dep file.
+
+		Now, edit /lib/modules/your-kernel-version/modules.dep and remove
+		usbhid.ko and usbmouse.ko (hid.o and usbmouse.o for kernel 2.4) lines
+                (if not required by any other USB mouse) to prevent loading of any other
+		mouse driver first as lmpcm_usb.
+
+		Loading required support:
+
+		Kernel 2.6:
+
+			USB support:
+
+			# modprobe usbcore
+			# modprobe uhci-hcd			(or similar)
+
+			Input core support:
+
+			# modprobe evdev
+
+		Kernel 2.4:
+
+			USB support:
+
+			# modprobe usbcore
+			# modprobe usb-uhci			(or similar)
+
+			Input core support:
+
+			# modprobe input
+			# modprobe mousedev
+			# modprobe keybdev
+			# modprobe evdev
+
+		At this time, mouse SHOULD NOT work, try it, if working, that's because
+		you have hid and usbmouse running on kernel so if not kernel bultin,
+		unload modules:
+
+		Kernel 2.6:
+
+			# rmmod usbhid
+			# rmmod usbmouse
+
+		Kernel 2.4:
+
+			# rmmod hid
+			# rmmod usbmouse
+
+
+		Loading MediaPlay support:
+
+		# modprobe lmpcm_usb
+
+		Now your mouse should work.
+
+		This modprobe lines can be added to your rc.modules script if you prefer.
+
+
+	Testing:
+
+		If everything runs as we expected, you have Logitech MediaPlay Mouse driver
+		running in your kernel, anyway you can check:
+
+		# dmesg | grep Logitech
+
+		The result should be something like:
+
+		... ...
+		input0: Logitech USB Receiver on usb1:3.0
+		lmpcm.c: v0.3.2:USB Logitech MediaPlay Cordless Mouse driver
+		... ...
+
+		Try multimedia buttons by running this:
+
+		hexdump < /dev/input/eventX		(where X is the number of the event device)
+
+		Press mouse keys!!
+		Is it working?? ;)
+
+
+	Using:
+
+		At this time you have your mouse support up and running, you can try it with gnome
+		acme or other software. I tested with mmkc and it works pretty good.
+
+
+	Bugs/Support, send me a mail.
+
+
+
+David Oliveira
+: <d.oliveira@prozone.org>

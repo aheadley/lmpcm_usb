@@ -1,0 +1,8 @@
+Logitech MediaPlay Cordless Mouse USB Linux driver v0.5.8 change log
+--
+
+	* Added support for > 2.6.32 kernel
+
+
+David Oliveira
+: <d.oliveira@prozone.org>
